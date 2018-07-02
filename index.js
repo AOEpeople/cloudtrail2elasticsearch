@@ -6,7 +6,7 @@ exports.handler = function(event, context, callback){
 
   var config = {
     elasticsearch: {
-      host: process.env.ES_INDEXPREFIX,
+      host: process.env.ES_HOST,
       useAWS: false
     },
     mappings:
