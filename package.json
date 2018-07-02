@@ -4,9 +4,6 @@
   "description": "AWS lambda for parsing CloudTrail logs stored on S3 and pushes them into ElasticSearch.",
   "main": "index.js",
   "dependencies": {
-    "lambda-stash": "^2.0.0",
-    "elasticsearch": "^14.2.1",
-    "aws-sdk": "^2.265.1",
-    "zlib": "^1.0.5"
+    "lambda-stash": "^2.0.0"
   }
 }
