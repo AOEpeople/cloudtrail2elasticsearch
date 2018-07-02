@@ -22,8 +22,7 @@ exports.handler = function(event, context, callback){
         elasticsearch: {
           index: process.env.ES_INDEXPREFIX + '-' +((new Date()).toJSON().slice(0, 10).replace(/[-T]/g, '.')),
           type: 'cloudtrail'
-        },
-        dateField: 'date'
+        }
       }
     ]
   };
