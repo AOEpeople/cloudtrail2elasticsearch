@@ -39,68 +39,29 @@ exports.handler = function(event, context, callback) {
                 return callback(err);
             }
 
-            var bulk = [];
-            async.each(records, function(record, publishComplete) {
-                  stringified_json = JSON.stringify(record);
-                  console.log(stringified_json);
+            async.each(records, function(record){
+              var bulk = [];
+              record.forEach(function(entry){
+                  entry["@timestamp"] = new Date(entry.eventTime);
+                  entry["environment"] = process.env.STAGE;
+              });
 
-                  date_record = new Date(record.eventTime);
-                  date_json = new Date(stringified_json.eventTime);
-                  console.log('eventTime from record = ', record.eventTime);
-                  console.log('eventTime from json = ', stringified_json.eventTime);
-                  console.log('Date from record = ', date_record);
-                  console.log('Date from json = ', date_json);
-
-                  console.log('Stage = ', process.env.STAGE);
-
-                  stringified_json["@timestamp"] = new Date(record.eventTime);
-                  stringified_json["environment"] = process.env.STAGE;
-
-                  console.log('Timestamp before = ', stringified_json["@timestamp"]);
-                  console.log('Env before = ', stringified_json["environment"]);
-
-                  bulk.push({"index": {}});
-                  bulk.push(stringified_json);
-
-                  console.log('After bullk');
-                  console.log(stringified_json);
-
-                  console.log('Timestamp = ', stringified_json["@timestamp"]);
-                  console.log('Env = ', stringified_json["environment"]);
-
-                  client.bulk({
-                    index: process.env.ES_INDEXPREFIX + '-' +((new Date()).toJSON().slice(0, 10).replace(/[-T]/g, '.')),
-                    type: 'log',
-                    body: bulk
-                  }, function(err, resp, status) {
-                    if(err) {
-                      return callback(err);
-                    }
-                  }, next);
-            });
-
-            /*var bulk = [];
-            records.forEach(function(record) {
-              console.log('Record date = ', record.eventTime);
-              console.log('Instantiated date = ', new Date(record.eventTime));
-              console.log(record);
-              record["@timestamp"] = new Date(record.eventTime);
-              record["environment"] = process.env.STAGE;
               bulk.push({"index": {}});
               bulk.push(record);
+
+              client.bulk({
+                index: process.env.ES_INDEXPREFIX + '-' +((new Date()).toJSON().slice(0, 10).replace(/[-T]/g, '.')),
+                type: 'log',
+                body: bulk
+              }, function(err, resp, status) {
+                if(err) {
+                  console.log('Error: ', err);
+                  return callback(err);
+                }
+                next();
+              });
+
             });
-
-
-            client.bulk({
-              index: process.env.ES_INDEXPREFIX + '-' +((new Date()).toJSON().slice(0, 10).replace(/[-T]/g, '.')),
-              type: 'log',
-              body: bulk
-            }, function(err, resp, status) {
-              if(err) {
-                return callback(err);
-            }
-              next();
-            });*/
         }
 
     ], function (err) {
